@@ -105,3 +105,15 @@ export function getCustomBackendUrl() {
   }
   return '';
 }
+
+/**
+ * Checks whether an explicit external backend has been configured in production
+ */
+export function isBackendConfigured() {
+  if (typeof window === 'undefined') return true;
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') return true;
+  if (import.meta.env.VITE_API_BASE_URL && !import.meta.env.VITE_API_BASE_URL.startsWith('/')) return true;
+  if (getCustomBackendUrl()) return true;
+  return false;
+}
+

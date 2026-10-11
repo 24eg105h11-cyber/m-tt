@@ -5,6 +5,7 @@ import { Sparkles, Lock, Mail, Shield, GraduationCap, BookOpen, AlertCircle, Ser
 import { authApi } from '../api/authApi';
 import { useAuthStore } from '../store/authStore';
 import BackendConfigModal from '../components/BackendConfigModal';
+import { isBackendConfigured } from '../config/apiConfig';
 
 export default function LoginPage() {
   const { setAuth } = useAuthStore();
@@ -45,9 +46,14 @@ export default function LoginPage() {
         navigate('/timetable', { replace: true });
       }
     } catch (err) {
-      if (err.response?.status === 404 || err.code === 'ERR_NETWORK' || !err.response) {
+      if (
+        err.response?.status === 404 ||
+        err.response?.status === 405 ||
+        err.code === 'ERR_NETWORK' ||
+        !err.response
+      ) {
         setIsConnectionError(true);
-        setErrorMsg('Backend API endpoint not reachable (404/Connection Failed). Please configure or link your deployed backend URL.');
+        setErrorMsg('Backend server not connected (Vercel returned 405/404). Please link your Render backend URL below.');
       } else {
         setIsConnectionError(false);
         setErrorMsg(err.response?.data?.message || 'Invalid email or password.');
@@ -76,6 +82,27 @@ export default function LoginPage() {
             Access intelligent classroom allocation & prediction services
           </p>
         </div>
+
+        {/* Backend Missing Alert for Vercel */}
+        {!isBackendConfigured() && (
+          <div className="p-4 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs space-y-2.5">
+            <div className="flex items-center gap-2 font-bold text-white">
+              <Server className="w-4 h-4 text-indigo-400" />
+              <span>Step 1: Connect Your Backend Server</span>
+            </div>
+            <p className="text-[11px] text-slate-300 leading-relaxed">
+              The frontend is hosted on Vercel, but the backend is hosted on Render. Connect your Render URL so the app can talk to the database:
+            </p>
+            <button
+              type="button"
+              onClick={() => setShowConfigModal(true)}
+              className="w-full py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition shadow-lg shadow-indigo-600/25"
+            >
+              <Server className="w-3.5 h-3.5" />
+              Enter Render Backend URL
+            </button>
+          </div>
+        )}
 
         {/* Quick Demo Logins Box */}
         <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-2.5">
