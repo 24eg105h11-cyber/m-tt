@@ -27,9 +27,14 @@ export default function HomePage() {
     async function loadData() {
       try {
         const res = await classroomApi.search({ minCapacity: 20 });
-        setFeaturedRooms(res.data.slice(0, 4));
+        if (Array.isArray(res.data)) {
+          setFeaturedRooms(res.data.slice(0, 4));
+        } else {
+          setFeaturedRooms([]);
+        }
       } catch (err) {
         console.error('Failed to load featured rooms:', err);
+        setFeaturedRooms([]);
       } finally {
         setLoading(false);
       }
@@ -128,7 +133,7 @@ export default function HomePage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {featuredRooms.map((room) => (
+            {(Array.isArray(featuredRooms) ? featuredRooms : []).map((room) => (
               <div
                 key={room.id}
                 className="group relative p-5 rounded-2xl bg-slate-900/80 border border-slate-800/80 hover:border-indigo-500/40 transition-all duration-300 flex flex-col justify-between shadow-lg hover:shadow-indigo-500/10"

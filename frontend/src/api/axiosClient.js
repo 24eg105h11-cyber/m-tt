@@ -22,7 +22,23 @@ axiosClient.interceptors.request.use(
 );
 
 axiosClient.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // Guard against Vercel/proxies returning index.html for unmapped /api routes
+    if (
+      typeof response.data === 'string' &&
+      (response.data.trim().startsWith('<!DOCTYPE') ||
+        response.data.trim().startsWith('<html') ||
+        response.headers['content-type']?.includes('text/html'))
+    ) {
+      const err = new Error('Backend server is offline or returned an HTML fallback page.');
+      err.response = {
+        status: 404,
+        data: { message: 'Backend API not reachable (Received HTML instead of JSON).' },
+      };
+      return Promise.reject(err);
+    }
+    return response;
+  },
   (error) => {
     if (error.response?.status === 401) {
       // If unauthorized and has token, clear expired token

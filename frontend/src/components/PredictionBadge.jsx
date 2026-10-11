@@ -125,7 +125,7 @@ export default function PredictionBadge({
                 {explanation || 'Prediction is based on recurring academic schedules and time-of-day demand trends.'}
               </p>
 
-              {contributingFactors && contributingFactors.length > 0 && (
+              {Array.isArray(contributingFactors) && contributingFactors.length > 0 && (
                 <div>
                   <span className="text-xs font-medium text-slate-400 block mb-1.5">
                     Contributing Factors:

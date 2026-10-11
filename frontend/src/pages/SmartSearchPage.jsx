@@ -93,9 +93,10 @@ export default function SmartSearchPage() {
     async function fetchBuildings() {
       try {
         const res = await classroomApi.getBuildings();
-        setBuildings(res.data);
+        setBuildings(Array.isArray(res.data) ? res.data : []);
       } catch (err) {
         console.error('Failed to load buildings:', err);
+        setBuildings([]);
       }
     }
     fetchBuildings();
@@ -117,7 +118,7 @@ export default function SmartSearchPage() {
 
     try {
       const res = await classroomApi.search(params);
-      let data = res.data;
+      let data = Array.isArray(res.data) ? [...res.data] : [];
 
       // Apply client-side sorting if changed
       if (sortBy === 'capacity') {
@@ -234,7 +235,7 @@ export default function SmartSearchPage() {
               className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white focus:outline-none focus:border-indigo-500 transition"
             >
               <option value="">All Buildings</option>
-              {buildings.map((b) => (
+              {(Array.isArray(buildings) ? buildings : []).map((b) => (
                 <option key={b} value={b}>
                   {b}
                 </option>
@@ -347,7 +348,7 @@ export default function SmartSearchPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {results.map((room) => (
+          {(Array.isArray(results) ? results : []).map((room) => (
             <div
               key={room.id}
               className={`p-6 rounded-2xl bg-slate-900/90 border transition-all duration-200 flex flex-col justify-between ${

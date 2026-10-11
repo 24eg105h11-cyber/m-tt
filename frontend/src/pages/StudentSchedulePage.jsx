@@ -32,9 +32,10 @@ export default function StudentSchedulePage() {
         date: selectedDate,
         query: searchQuery || undefined,
       });
-      setAllocations(res.data);
+      setAllocations(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       console.error('Failed to load allocations:', err);
+      setAllocations([]);
     } finally {
       setLoading(false);
     }
@@ -44,9 +45,10 @@ export default function StudentSchedulePage() {
   const fetchTimetable = async () => {
     try {
       const res = await timetableApi.getPublic(searchQuery);
-      setTimetableSlots(res.data);
+      setTimetableSlots(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       console.error('Failed to load timetable:', err);
+      setTimetableSlots([]);
     }
   };
 
@@ -172,7 +174,7 @@ export default function StudentSchedulePage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {allocations.map((item) => (
+              {(Array.isArray(allocations) ? allocations : []).map((item) => (
                 <div
                   key={item.id}
                   className="p-5 rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-indigo-500/30 transition shadow-lg space-y-4"
