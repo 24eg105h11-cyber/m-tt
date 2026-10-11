@@ -79,8 +79,8 @@ public class BookingService {
             throw new IllegalArgumentException("Cannot book a classroom for a past date");
         }
 
-        if (request.getBookingDate().isEqual(LocalDate.now()) && request.getStartTime().isBefore(LocalTime.now())) {
-            throw new IllegalArgumentException("Cannot book for a past time slot today");
+        if (request.getBookingDate().isEqual(LocalDate.now()) && request.getEndTime().isBefore(LocalTime.now())) {
+            throw new IllegalArgumentException("Cannot book for a past time slot today (time slot has already ended)");
         }
 
         // Step 2: Check classroom exists and is ACTIVE

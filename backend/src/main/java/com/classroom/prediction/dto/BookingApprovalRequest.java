@@ -9,8 +9,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BookingApprovalRequest {
-    @NotNull
     private BookingStatus status; // APPROVED or REJECTED
-
     private String rejectionReason;
 }

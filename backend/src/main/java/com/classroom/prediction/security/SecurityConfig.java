@@ -59,6 +59,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Public routes
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/error").permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/ws/**", "/ws").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/classrooms/**").permitAll()
@@ -72,8 +74,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/classrooms/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/classrooms/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/classrooms/**").hasRole("ADMIN")
-                        .requestMatchers("/api/bookings/*/approve").hasRole("ADMIN")
-                        .requestMatchers("/api/bookings/*/reject").hasRole("ADMIN")
+                        .requestMatchers("/api/bookings/*/approve", "/api/bookings/*/approve/**").hasRole("ADMIN")
+                        .requestMatchers("/api/bookings/*/reject", "/api/bookings/*/reject/**").hasRole("ADMIN")
 
                         // Any other request must be authenticated
                         .anyRequest().authenticated()
