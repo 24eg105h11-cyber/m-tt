@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { Sparkles, Lock, Mail, Shield, GraduationCap, BookOpen, AlertCircle } from 'lucide-react';
+import { Sparkles, Lock, Mail, Shield, GraduationCap, BookOpen, AlertCircle, Server } from 'lucide-react';
 import { authApi } from '../api/authApi';
 import { useAuthStore } from '../store/authStore';
+import BackendConfigModal from '../components/BackendConfigModal';
 
 export default function LoginPage() {
   const { setAuth } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
   const [errorMsg, setErrorMsg] = useState(null);
+  const [isConnectionError, setIsConnectionError] = useState(false);
+  const [showConfigModal, setShowConfigModal] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const {
@@ -42,7 +45,13 @@ export default function LoginPage() {
         navigate('/timetable', { replace: true });
       }
     } catch (err) {
-      setErrorMsg(err.response?.data?.message || 'Invalid email or password.');
+      if (err.response?.status === 404 || err.code === 'ERR_NETWORK' || !err.response) {
+        setIsConnectionError(true);
+        setErrorMsg('Backend API endpoint not reachable (404/Connection Failed). Please configure or link your deployed backend URL.');
+      } else {
+        setIsConnectionError(false);
+        setErrorMsg(err.response?.data?.message || 'Invalid email or password.');
+      }
     } finally {
       setLoading(false);
     }
@@ -109,9 +118,21 @@ export default function LoginPage() {
         {/* Form Card */}
         <div className="p-8 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-2xl">
           {errorMsg && (
-            <div className="mb-5 p-3 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 shrink-0" />
-              {errorMsg}
+            <div className="mb-5 p-3.5 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs space-y-2">
+              <div className="flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
+                <span>{errorMsg}</span>
+              </div>
+              {isConnectionError && (
+                <button
+                  type="button"
+                  onClick={() => setShowConfigModal(true)}
+                  className="w-full py-1.5 px-3 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-[11px] flex items-center justify-center gap-1.5 transition shadow"
+                >
+                  <Server className="w-3.5 h-3.5" />
+                  Configure Backend Server URL
+                </button>
+              )}
             </div>
           )}
 
@@ -169,6 +190,11 @@ export default function LoginPage() {
           </div>
         </div>
       </div>
+
+      <BackendConfigModal
+        isOpen={showConfigModal}
+        onClose={() => setShowConfigModal(false)}
+      />
     </div>
   );
 }

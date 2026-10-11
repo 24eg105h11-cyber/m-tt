@@ -1,0 +1,19 @@
+# Git
+.git
+.gitignore
+
+# Build artifacts
+target/
+*.jar
+*.war
+
+# Env and sensitive files
+.env
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+
+# Logs
+*.log

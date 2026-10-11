@@ -1,0 +1,20 @@
+# Git
+.git
+.gitignore
+
+# Frontend
+frontend/
+
+# Local tools & downloads
+tools/
+
+# Build artifacts
+backend/target/
+**/target/
+
+# Logs & temp
+*.log
+.idea/
+.vscode/
+*.iml
+.DS_Store

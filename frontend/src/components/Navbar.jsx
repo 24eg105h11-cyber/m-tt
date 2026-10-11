@@ -16,13 +16,16 @@ import {
   GraduationCap,
   Layers,
   CheckCircle,
+  Server,
 } from 'lucide-react';
+import BackendConfigModal from './BackendConfigModal';
 
 export default function Navbar() {
   const { user, isAuthenticated, logout, setAuth } = useAuthStore();
   const { notifications, unreadCount, clearUnread } = useNotificationStore();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [showBackendModal, setShowBackendModal] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -205,6 +208,16 @@ export default function Navbar() {
               </button>
             </div>
 
+            {/* Backend Server Connection Button */}
+            <button
+              onClick={() => setShowBackendModal(true)}
+              title="Backend Server Connection Settings"
+              className="p-2 rounded-xl text-slate-400 hover:text-indigo-400 hover:bg-slate-900 transition flex items-center gap-1.5"
+            >
+              <Server className="w-4 h-4" />
+              <span className="hidden sm:inline text-[11px] font-medium text-slate-400">Server</span>
+            </button>
+
             {/* Notification Bell */}
             <div className="relative">
               <button
@@ -311,6 +324,11 @@ export default function Navbar() {
           </div>
         </div>
       </div>
+
+      <BackendConfigModal
+        isOpen={showBackendModal}
+        onClose={() => setShowBackendModal(false)}
+      />
     </nav>
   );
 }

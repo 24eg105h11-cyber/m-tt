@@ -1,7 +1,7 @@
 import axios from 'axios';
+import { getBackendUrl } from '../config/apiConfig';
 
 const axiosClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -9,6 +9,9 @@ const axiosClient = axios.create({
 
 axiosClient.interceptors.request.use(
   (config) => {
+    // Dynamically assign active baseURL on each request
+    config.baseURL = getBackendUrl();
+
     const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;

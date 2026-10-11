@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { Client } from '@stomp/stompjs';
+import { getWebSocketUrl } from '../config/apiConfig';
 
 export const useNotificationStore = create((set, get) => ({
   notifications: [],
@@ -8,16 +9,26 @@ export const useNotificationStore = create((set, get) => ({
   connected: false,
 
   initWebSocket: () => {
-    if (get().stompClient && get().connected) return;
-
     try {
-      const loc = window.location;
-      const protocol = loc.protocol === 'https:' ? 'wss:' : 'ws:';
-      const brokerURL = import.meta.env.VITE_WS_URL || `${protocol}//${loc.host}/ws`;
+      const brokerURL = getWebSocketUrl();
+      if (!brokerURL) {
+        // No valid backend / WS endpoint resolved yet (e.g. on Vercel before backend is linked)
+        return;
+      }
+
+      // If client exists and is connected to same URL, do nothing
+      if (get().stompClient && get().connected) return;
+
+      // If an existing client was running, deactivate it first
+      if (get().stompClient) {
+        try {
+          get().stompClient.deactivate();
+        } catch (_) {}
+      }
 
       const client = new Client({
         brokerURL,
-        reconnectDelay: 5000,
+        reconnectDelay: 10000,
         heartbeatIncoming: 4000,
         heartbeatOutgoing: 4000,
         onConnect: () => {
@@ -58,15 +69,31 @@ export const useNotificationStore = create((set, get) => ({
           set({ connected: false });
         },
         onStompError: (frame) => {
-          console.warn('STOMP protocol error:', frame.headers['message']);
+          // Graceful handling of broker STOMP frame issues
+          set({ connected: false });
+        },
+        onWebSocketError: () => {
+          // Graceful handling when backend is cold-starting
+          set({ connected: false });
         },
       });
 
       client.activate();
       set({ stompClient: client });
     } catch (e) {
-      console.warn('WebSocket connection initialization error:', e);
+      console.warn('WebSocket initialization notice:', e);
     }
+  },
+
+  reconnectWebSocket: () => {
+    const existing = get().stompClient;
+    if (existing) {
+      try {
+        existing.deactivate();
+      } catch (_) {}
+      set({ stompClient: null, connected: false });
+    }
+    get().initWebSocket();
   },
 
   addNotification: (notif) => {
