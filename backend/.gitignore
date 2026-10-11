@@ -1,0 +1,20 @@
+# Target build folder
+target/
+*.jar
+*.war
+
+# IDE files
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+.vscode/
+
+# Local databases & logs
+data/
+*.log
+
+# Sensitive environment file (use .env.example as template)
+.env
+!.env.example

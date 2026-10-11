@@ -1,0 +1,11 @@
+# Project level gitignore
+.env
+!.env.example
+node_modules/
+target/
+tools/
+data/
+*.log
+.DS_Store
+.idea/
+.vscode/

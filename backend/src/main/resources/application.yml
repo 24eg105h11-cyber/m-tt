@@ -1,0 +1,36 @@
+server:
+  port: ${SERVER_PORT:8080}
+
+spring:
+  application:
+    name: classroom-prediction-system
+  datasource:
+    url: ${DB_URL:jdbc:h2:file:./data/classroomdb;DB_CLOSE_DELAY=-1}
+    driverClassName: ${DB_DRIVER:org.h2.Driver}
+    username: ${DB_USERNAME:sa}
+    password: ${DB_PASSWORD:}
+  h2:
+    console:
+      enabled: ${H2_CONSOLE_ENABLED:true}
+      path: /h2-console
+  jpa:
+    database-platform: ${JPA_DATABASE_PLATFORM:org.hibernate.dialect.H2Dialect}
+    hibernate:
+      ddl-auto: ${HIBERNATE_DDL_AUTO:update}
+    show-sql: ${SHOW_SQL:false}
+    properties:
+      hibernate:
+        format_sql: true
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
+    expiration-ms: ${JWT_EXPIRATION_MS:86400000} # 24 hours
+  prediction:
+    min-sample-size: ${PREDICTION_MIN_SAMPLE_SIZE:5}
+    baseline-weight-historical: ${PREDICTION_WEIGHT_HISTORICAL:0.45}
+    baseline-weight-timetable: ${PREDICTION_WEIGHT_TIMETABLE:0.35}
+    baseline-weight-day-pattern: ${PREDICTION_WEIGHT_DAY_PATTERN:0.20}
+    model-mode: ${PREDICTION_MODEL_MODE:STATISTICAL_BASELINE}
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173,http://localhost:3000}
