@@ -37,23 +37,23 @@ export function getBackendUrl() {
     return '/api';
   }
 
-  // In production if no backend URL is set, return relative '/api'
-  return '/api';
+  // Default fallback for production: Render backend
+  return 'https://m-tt.onrender.com/api';
 }
 
 /**
- * Returns the raw host URL without the trailing /api (e.g. "https://final-xxxx.onrender.com")
+ * Returns the raw host URL without the trailing /api (e.g. "https://m-tt.onrender.com")
  */
 export function getRawBackendHost() {
   const url = getBackendUrl();
   if (url.startsWith('http://') || url.startsWith('https://')) {
     return url.replace(/\/api$/, '');
   }
-  return '';
+  return 'https://m-tt.onrender.com';
 }
 
 /**
- * Returns the WebSocket broker URL (e.g. "wss://final-xxxx.onrender.com/ws")
+ * Returns the WebSocket broker URL (e.g. "wss://m-tt.onrender.com/ws")
  */
 export function getWebSocketUrl() {
   // Check explicit environment variable
@@ -75,8 +75,7 @@ export function getWebSocketUrl() {
     return `${proto}//${window.location.host}/ws`;
   }
 
-  // On Vercel when no external backend is set yet, return null to avoid spurious socket failures
-  return null;
+  return 'wss://m-tt.onrender.com/ws';
 }
 
 /**
